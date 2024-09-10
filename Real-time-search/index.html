@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Search with Debouncing and Promises</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #results {
+            margin-top: 10px;
+            padding: 0;
+            list-style-type: none;
+        }
+        #results li {
+            padding: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search Example</h1>
+    <label for="search">Search:</label>
+    <input type="text" id="search" placeholder="Type to search...">
+    <ul id="results"></ul>
+
+    <script>
+        function fetchResults(query) {
+            const results = ['apple', 'banana', 'apricot', 'orange', 'application'];
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const filteredResults = results.filter(item => item.includes(query.toLowerCase()));
+                    resolve(filteredResults);
+                }, 1000); 
+            });
+        }
+        function debounce(func, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        function handleInputChange(event) {
+            const query = event.target.value;
+            fetchResults(query).then(results => {
+                displayResults(results);
+            });
+        }
+        function displayResults(results) {
+            const resultsList = document.getElementById('results');
+            resultsList.innerHTML = '';
+            results.forEach(result => {
+                const listItem = document.createElement('li');
+                listItem.textContent = result;
+                resultsList.appendChild(listItem);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search');
+            searchInput.addEventListener('input', debounce(handleInputChange, 500));
+        });
+    </script>
+</body>
+</html>
